@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scene Composer MVP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <h1>Scene Composer MVP</h1>
+    <p>Build synthetic room scenes locally. No backend required.</p>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <h2>1) Background</h2>
+      <label>
+        Room image file
+        <input type="file" id="bg-file" accept="image/jpeg,image/png,image/webp" />
+      </label>
+
+      <h2>2) Items</h2>
+      <label>
+        Add item from URL
+        <div class="inline-row">
+          <input type="text" id="item-url" placeholder="https://example.com/chair.png" />
+          <button id="btn-add-url">Add URL</button>
+        </div>
+      </label>
+
+      <label>
+        Add item files
+        <input type="file" id="item-files" accept="image/jpeg,image/png,image/webp" multiple />
+      </label>
+
+      <label class="inline-check">
+        <input type="checkbox" id="auto-remove-white" checked />
+        Auto-remove near-white background on add
+      </label>
+
+      <label>
+        White threshold: <span id="val-white-threshold">245</span>
+        <input type="range" id="white-threshold" min="200" max="255" step="1" value="245" />
+      </label>
+
+      <h2>3) Selected Item</h2>
+      <label>
+        Selected
+        <select id="selected-item"></select>
+      </label>
+      <div class="actions single">
+        <button id="btn-deselect">Deselect</button>
+      </div>
+      <div class="actions single">
+        <button id="btn-preview">Preview Selected</button>
+      </div>
+
+      <label>
+        Scale: <span id="val-scale">1.00</span>
+        <input type="range" id="scale" min="0.2" max="3" step="0.05" value="1" />
+      </label>
+
+      <label>
+        Rotation: <span id="val-rotation">0deg</span>
+        <input type="range" id="rotation" min="-180" max="180" step="1" value="0" />
+      </label>
+
+      <label>
+        Opacity: <span id="val-opacity">1.00</span>
+        <input type="range" id="opacity" min="0.2" max="1" step="0.05" value="1" />
+      </label>
+
+      <div class="actions">
+        <button id="btn-move-up">Move Up</button>
+        <button id="btn-move-down">Move Down</button>
+      </div>
+      <div class="actions">
+        <button id="btn-front">Bring To Front</button>
+        <button id="btn-back">Push To Bottom</button>
+      </div>
+      <div class="actions single">
+        <button id="btn-remove" class="danger">Remove</button>
+      </div>
+      <div class="actions single">
+        <button id="btn-remove-white-selected">Remove White Bg (Selected)</button>
+      </div>
+
+      <h2>4) Export</h2>
+      <div class="actions">
+        <button id="btn-export" class="primary">Export PNG</button>
+        <button id="btn-json">Download Layout JSON</button>
+      </div>
+
+      <p id="status" class="status"></p>
+    </section>
+
+    <section class="panel stage-panel">
+      <h2>Canvas</h2>
+      <p class="hint">Drag items to place them in the room.</p>
+      <div id="stage" class="stage" aria-label="Scene composition stage"></div>
+      <p class="hint small">
+        Tip: Third-party URLs may block PNG export due to CORS. Use local files if export fails.
+      </p>
+    </section>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite" aria-atomic="true"></div>
+  <div id="preview-overlay" class="preview-overlay" hidden>
+    <img id="preview-image" class="preview-overlay__image" alt="Selected item preview" />
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

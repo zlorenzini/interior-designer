@@ -1,0 +1,26 @@
+# ── Web framework ─────────────────────────────────────────────────────────────
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9      # file uploads
+pydantic-settings>=2.2.0     # Settings from .env
+
+# ── Google Drive ──────────────────────────────────────────────────────────────
+google-api-python-client>=2.127.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.0
+
+# ── ML inference (install separately if GPU support needed) ───────────────────
+# Uncomment and adjust index URL for your platform:
+# torch>=2.2.0               --index-url https://download.pytorch.org/whl/cpu
+# torchvision>=0.17.0
+diffusers>=0.27.0
+transformers>=4.40.0
+accelerate>=0.29.0
+Pillow>=10.3.0
+
+# ── Fine-tuning (LoRA) ────────────────────────────────────────────────────────
+peft>=0.10.0
+
+# ── Dev / testing ─────────────────────────────────────────────────────────────
+pytest>=8.1.0
+httpx>=0.27.0                # async test client for FastAPI

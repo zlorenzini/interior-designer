@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interior Designer AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ── Navigation ─────────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar__logo">
+      <span class="topbar__icon">🛋️</span>
+      <span class="topbar__title">Interior Designer AI</span>
+    </div>
+    <nav class="topbar__nav" id="main-nav">
+      <button class="nav-btn active" data-view="capture">Capture</button>
+      <button class="nav-btn" data-view="compose">Compose</button>
+      <button class="nav-btn" data-view="gallery">Gallery</button>
+      <button class="nav-btn" data-view="generate">Generate</button>
+      <button class="nav-btn" data-view="training">Training</button>
+    </nav>
+  </header>
+
+  <!-- ── Views ──────────────────────────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- VIEW: Capture -->
+    <section class="view active" id="view-capture">
+      <h2>Capture Room</h2>
+      <div class="capture-grid">
+        <!-- Live camera feed -->
+        <div class="card camera-card">
+          <h3>Live Camera</h3>
+          <div class="camera-container" id="camera-container">
+            <video id="camera-video" autoplay playsinline muted></video>
+            <canvas id="camera-canvas" hidden></canvas>
+            <div class="camera-overlay" id="camera-status">Camera not started</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn--primary" id="btn-start-camera">Start Camera</button>
+            <button class="btn btn--secondary" id="btn-snap" disabled>Snap Photo</button>
+            <button class="btn btn--danger" id="btn-stop-camera" disabled>Stop</button>
+          </div>
+          <div id="camera-device-select-wrap" hidden>
+            <label for="camera-device-select">Camera:</label>
+            <select id="camera-device-select"></select>
+          </div>
+        </div>
+
+        <!-- File / Drive upload -->
+        <div class="card upload-card">
+          <h3>Upload Image</h3>
+          <label class="drop-zone" id="drop-zone">
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" hidden />
+            <span class="drop-zone__text">Drop an image here<br/>or <u>browse</u></span>
+            <img id="upload-preview" class="preview" hidden />
+          </label>
+          <div class="actions">
+            <button class="btn btn--secondary" id="btn-drive-pick">Open from Google Drive</button>
+            <button class="btn btn--primary" id="btn-upload" disabled>Upload</button>
+          </div>
+          <p id="upload-status" class="status-text"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: Compose -->
+    <section class="view" id="view-compose">
+      <h2>Compose Training Scenes</h2>
+      <div class="compose-grid">
+        <div class="card">
+          <h3>1) Room Background</h3>
+          <label>Use local room image
+            <input type="file" id="compose-bg-file" accept="image/jpeg,image/png,image/webp" />
+          </label>
+          <label>Or load existing image ID
+            <div class="row-inline">
+              <input type="text" id="compose-bg-id" placeholder="uploaded image_id" />
+              <button class="btn btn--secondary" id="btn-compose-load-bg-id">Load</button>
+            </div>
+          </label>
+
+          <h3>2) Add Furniture / Decor</h3>
+          <label>Pull item from image URL
+            <div class="row-inline">
+              <input type="text" id="compose-item-url" placeholder="https://example.com/chair.png" />
+              <button class="btn btn--secondary" id="btn-compose-add-url">Add URL</button>
+            </div>
+          </label>
+          <label>Or upload cutout / product image
+            <input type="file" id="compose-item-file" accept="image/jpeg,image/png,image/webp" multiple />
+          </label>
+          <label>
+            <input type="checkbox" id="compose-auto-remove-white" checked />
+            Auto-remove near-white background on add
+          </label>
+          <label>White threshold: <span id="compose-white-threshold-val">245</span>
+            <input type="range" id="compose-white-threshold" min="200" max="255" step="1" value="245" />
+          </label>
+
+          <h3>3) Selected Item Controls</h3>
+          <label>Selected item
+            <select id="compose-selected"></select>
+          </label>
+          <div class="actions">
+            <button class="btn btn--secondary" id="btn-compose-deselect">Deselect</button>
+          </div>
+          <div class="actions">
+            <button class="btn btn--secondary" id="btn-compose-preview">Preview Selected</button>
+          </div>
+          <label>Scale: <span id="compose-scale-val">1.00</span>
+            <input type="range" id="compose-scale" min="0.2" max="3" step="0.05" value="1" />
+          </label>
+          <label>Rotation: <span id="compose-rot-val">0°</span>
+            <input type="range" id="compose-rotation" min="-180" max="180" step="1" value="0" />
+          </label>
+          <label>Opacity: <span id="compose-opacity-val">1.00</span>
+            <input type="range" id="compose-opacity" min="0.2" max="1" step="0.05" value="1" />
+          </label>
+
+          <div class="actions">
+            <button class="btn btn--secondary" id="btn-compose-move-up">Move Up</button>
+            <button class="btn btn--secondary" id="btn-compose-move-down">Move Down</button>
+          </div>
+          <div class="actions">
+            <button class="btn btn--secondary" id="btn-compose-front">Bring To Front</button>
+            <button class="btn btn--secondary" id="btn-compose-back">Push To Bottom</button>
+          </div>
+          <div class="actions">
+            <button class="btn btn--danger" id="btn-compose-remove">Remove Selected</button>
+          </div>
+          <div class="actions">
+            <button class="btn btn--secondary" id="btn-compose-remove-white-selected">Remove White Bg (Selected)</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Scene Canvas</h3>
+          <p class="status-text">Drag items to place them. Use controls for size, angle, and opacity.</p>
+          <div class="compose-stage" id="compose-stage" aria-label="Scene composition stage"></div>
+          <div class="actions">
+            <button class="btn btn--primary" id="btn-compose-export">Export PNG</button>
+            <button class="btn btn--secondary" id="btn-compose-upload">Upload As Training Image</button>
+            <button class="btn btn--secondary" id="btn-compose-json">Download Layout JSON</button>
+          </div>
+          <p id="compose-status" class="status-text"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: Gallery -->
+    <section class="view" id="view-gallery">
+      <h2>Image Gallery</h2>
+      <div class="toolbar">
+        <button class="btn btn--secondary" id="btn-refresh-gallery">Refresh</button>
+      </div>
+      <div class="gallery-grid" id="gallery-grid">
+        <p class="placeholder">No images uploaded yet.</p>
+      </div>
+    </section>
+
+    <!-- VIEW: Generate -->
+    <section class="view" id="view-generate">
+      <h2>Generate Design</h2>
+      <div class="generate-grid">
+        <div class="card">
+          <h3>Source & Settings</h3>
+          <label>Source image ID
+            <input type="text" id="gen-image-id" placeholder="paste image_id or select from gallery" />
+          </label>
+          <label>Style preset
+            <select id="gen-style">
+              <option value="modern">Modern</option>
+              <option value="scandinavian">Scandinavian</option>
+              <option value="industrial">Industrial</option>
+              <option value="bohemian">Bohemian</option>
+              <option value="minimalist">Minimalist</option>
+              <option value="traditional">Traditional</option>
+            </select>
+          </label>
+          <label>Custom prompt (optional)
+            <textarea id="gen-prompt" rows="2" placeholder="e.g. bright living room with plants…"></textarea>
+          </label>
+          <label>Denoising strength: <span id="gen-strength-val">0.75</span>
+            <input type="range" id="gen-strength" min="0.1" max="1" step="0.05" value="0.75" />
+          </label>
+          <label>Fine-tuned model (optional)
+            <input type="text" id="gen-fine-tuned" placeholder="style_name from training job" />
+          </label>
+          <button class="btn btn--primary" id="btn-generate">Generate</button>
+          <p id="gen-status" class="status-text"></p>
+        </div>
+        <div class="card result-card">
+          <h3>Result</h3>
+          <div class="result-container" id="result-container">
+            <p class="placeholder">Generated image will appear here.</p>
+          </div>
+          <div class="actions" id="result-actions" hidden>
+            <button class="btn btn--secondary" id="btn-save-drive">Save to Google Drive</button>
+            <a class="btn btn--secondary" id="btn-download-result" download="generated.png">Download</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: Training -->
+    <section class="view" id="view-training">
+      <h2>Fine-Tune Model</h2>
+      <div class="card training-card">
+        <h3>New Training Job</h3>
+        <label>Style name
+          <input type="text" id="train-style" placeholder="e.g. my-modern-loft" />
+        </label>
+        <label>Image IDs (comma-separated)
+          <textarea id="train-image-ids" rows="3" placeholder="image_id1, image_id2, …"></textarea>
+        </label>
+        <label>Epochs: <span id="train-epochs-val">5</span>
+          <input type="range" id="train-epochs" min="1" max="50" step="1" value="5" />
+        </label>
+        <label>Learning rate
+          <input type="number" id="train-lr" value="0.0001" step="0.00001" min="0.000001" />
+        </label>
+        <button class="btn btn--primary" id="btn-start-training">Start Training</button>
+        <p id="train-status-text" class="status-text"></p>
+      </div>
+
+      <h3>Training Jobs</h3>
+      <div class="toolbar">
+        <button class="btn btn--secondary" id="btn-refresh-jobs">Refresh</button>
+      </div>
+      <div id="job-list">
+        <p class="placeholder">No training jobs yet.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Toast notifications ─────────────────────────────────────────── -->
+  <div id="toast-container" class="toast-container"></div>
+  <div id="compose-preview-overlay" class="preview-overlay" hidden>
+    <img id="compose-preview-image" class="preview-overlay__image" alt="Selected item preview" />
+  </div>
+
+  <!-- ── Scripts (load order matters) ───────────────────────────────── -->
+  <script src="js/api.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/google_drive.js"></script>
+  <script src="js/scene_composer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
