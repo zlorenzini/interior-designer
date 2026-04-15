@@ -2,7 +2,7 @@ name: Deploy Standalone Compose to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "master"]
     paths:
       - "standalone-compose/**"
       - ".github/workflows/deploy-standalone-compose-pages.yml"
