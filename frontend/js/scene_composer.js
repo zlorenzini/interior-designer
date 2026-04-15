@@ -716,6 +716,7 @@ window.SceneComposer = (() => {
     state.deps = { API, toast, setStatus };
 
     bindEvents();
+    hidePreview();
     renderSelectedOptions();
     syncSelectedControls();
     renderScene();

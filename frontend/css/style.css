@@ -409,6 +409,10 @@ progress.job-progress {
   cursor: zoom-out;
 }
 
+.preview-overlay[hidden] {
+  display: none !important;
+}
+
 .preview-overlay__image {
   display: block;
   max-width: min(96vw, 1600px);

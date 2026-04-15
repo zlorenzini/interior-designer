@@ -636,6 +636,7 @@
   }
 
   bindEvents();
+  hidePreview();
   renderSelectedOptions();
   syncControls();
   renderScene();
